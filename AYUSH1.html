@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyHealth Portal | Secure Patient Access</title>
+    <style>
+        /* --- General & Body Styles --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+        }
+
+        /* --- Authentication Forms (Login/Register) --- */
+        #auth-container {
+            max-width: 400px;
+            margin: 40px auto;
+            padding: 40px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .auth-form h2 {
+            text-align: center;
+            color: #0d47a1;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #1976d2;
+        }
+
+        .form-toggle-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #555;
+        }
+
+        .form-toggle-link a {
+            color: #2196f3;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        #register-form {
+            display: none;
+        }
+
+        /* --- Dashboard Styles --- */
+        #dashboard-container {
+            display: none;
+        }
+        
+        header {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            color: #0d47a1;
+            margin: 0;
+        }
+        
+        .logout-btn {
+            background: #f44336;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .card {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+
+        .card h3 {
+            margin-top: 0;
+            border-bottom: 2px solid #f0f4f8;
+            padding-bottom: 10px;
+            color: #1976d2;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <div id="auth-container">
+            <form id="login-form" class="auth-form" onsubmit="handleLogin(event)">
+                <h2>MyHealth Portal Login</h2>
+                <div class="input-group">
+                    <label for="login-email">Email Address</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                <div class="input-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit" class="btn">Login</button>
+                <p class="form-toggle-link">
+                    Don't have an account? <a href="#" onclick="toggleForms()">Register here</a>
+                </p>
+            </form>
+
+            <form id="register-form" class="auth-form">
+                <h2>Create Your Account</h2>
+                <div class="input-group">
+                    <label for="reg-name">Full Name</label>
+                    <input type="text" id="reg-name" required>
+                </div>
+                <div class="input-group">
+                    <label for="reg-email">Email Address</label>
+                    <input type="email" id="reg-email" required>
+                </div>
+                <div class="input-group">
+                    <label for="reg-password">Password</label>
+                    <input type="password" id="reg-password" required>
+                </div>
+                <button type="submit" class="btn">Register</button>
+                <p class="form-toggle-link">
+                    Already have an account? <a href="#" onclick="toggleForms()">Login here</a>
+                </p>
+            </form>
+        </div>
+
+        <main id="dashboard-container">
+            <header>
+                <h1>Welcome, Patient Name!</h1>
+                <button class="logout-btn" onclick="handleLogout()">Logout</button>
+            </header>
+
+            <section class="card">
+                <h3><i class="fas fa-file-medical"></i> Health Records</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Doctor</th>
+                            <th>Diagnosis</th>
+                            <th>View Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2025-09-15</td>
+                            <td>Dr. Anjali Sharma</td>
+                            <td>Viral Fever (Jvara)</td>
+                            <td><a href="#">View Report</a></td>
+                        </tr>
+                        <tr>
+                            <td>2025-07-22</td>
+                            <td>Dr. Vikram Singh</td>
+                            <td>Routine Check-up</td>
+                            <td><a href="#">View Notes</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section class="card">
+                <h3><i class="fas fa-rupee-sign"></i> Medical Expenses</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Service / Item</th>
+                            <th>Amount (₹)</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2025-09-15</td>
+                            <td>Consultation Fee</td>
+                            <td>₹ 800.00</td>
+                            <td>Paid</td>
+                        </tr>
+                        <tr>
+                            <td>2025-09-15</td>
+                            <td>Pharmacy: Paracetamol</td>
+                            <td>₹ 55.00</td>
+                            <td>Paid</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section class="card">
+                <h3><i class="fas fa-pills"></i> Current Medications</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Medicine</th>
+                            <th>Dosage</th>
+                            <th>Frequency</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Paracetamol 650mg</td>
+                            <td>1 Tablet</td>
+                            <td>After meals, 3 times a day</td>
+                        </tr>
+                        <tr>
+                            <td>Vitamin C 500mg</td>
+                            <td>1 Tablet</td>
+                            <td>Once a day</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // --- Simple JavaScript for Demonstration ---
+
+        // Get DOM elements
+        const authContainer = document.getElementById('auth-container');
+        const dashboardContainer = document.getElementById('dashboard-container');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+
+        // Function to toggle between login and register forms
+        function toggleForms() {
+            if (loginForm.style.display === 'none') {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+            } else {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+            }
+        }
+
+        // Function to simulate a successful login
+        function handleLogin(event) {
+            event.preventDefault(); // Prevent actual form submission
+            
+            // In a real application, you would send data to a server and validate it here.
+            
+            // For this demo, we just hide the auth form and show the dashboard.
+            authContainer.style.display = 'none';
+            dashboardContainer.style.display = 'block';
+        }
+        
+        // Function to simulate a logout
+        function handleLogout() {
+            // Hide the dashboard and show the login form again.
+            dashboardContainer.style.display = 'none';
+            authContainer.style.display = 'block';
+        }
+
+    </script>
+</body>
+</html>
